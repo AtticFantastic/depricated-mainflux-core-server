@@ -5,90 +5,101 @@
  * All rights not explicitly granted in the Apache license, version 2.0 are reserved.
  * See the included LICENSE file for more details.
  */
-var restify = require('restify');
-var domain = require('domain');
-var config = require('./config');
-var log = require('./app/logger');
+
+var nats = require('nats').connect();
+
+var replySubject = '';
+
+/**
+ * createDevice()
+ */
+var createDevice = function(params) {
+    console.log("createDevice");
+ 
+    nats.publish(replySubject, 'Response from createDevice()');
+}
+
+/**
+ * getDevices()
+ */
+var getDevices = function(params) {
+    console.log("getDevices");
+ 
+    nats.publish(replySubject, 'Response from getDevices()');
+}
+
+/**
+ * getDevice()
+ */
+var getDevice = function(params) {
+    console.log("getDevice");
+ 
+    nats.publish(replySubject, 'Response from getDevice()');
+}
+
+/**
+ * updateDevice()
+ */
+var updateDevice = function(params) {
+    console.log("updateDevice");
+ 
+    nats.publish(replySubject, 'Response from updateDevice()');
+}
+
+/**
+ * deleteDevice()
+ */
+var deleteDevice = function(params) {
+    console.log("deleteDevice");
+ 
+    nats.publish(replySubject, 'Response from deleteDevice()');
+}
 
 
 /**
- * HTTP Restify
+ * Lookup table of all API functions
  */
+var fnList = {
+    'createDevice' : createDevice,
+    'getDevices' : getDevices,
+    'getDevice' : getDevice,
+    'updateDevice' : updateDevice,
+    'deleteDevice' : deleteDevice
+}
 
-/** Create coreServer */
-var coreServer = restify.createServer({
-    name: "Mainflux"
+/** Subscribe to core_in subject */
+nats.subscribe('core_in', function(req, replyTo) {
+    console.log('Received a message: ' + req);
+
+    var rpc = JSON.parse(req);
+    replySubject = replyTo;
+
+    console.log(replySubject);
+    
+    /** Call the function */
+    fnList[rpc.method](rpc.params)
+
 });
 
-
-coreServer.pre(restify.pre.sanitizePath());
-coreServer.use(restify.acceptParser(coreServer.acceptable));
-coreServer.use(restify.bodyParser());
-coreServer.use(restify.queryParser());
-coreServer.use(restify.authorizationParser());
-coreServer.use(restify.CORS());
-coreServer.use(restify.fullResponse());
-
-/** Global error handler */
-coreServer.use(function(req, res, next) {
-    var domainHandler = domain.create();
-
-    domainHandler.on('error', function(err) {
-        var errMsg = 'Request: \n' + req + '\n';
-        errMsg += 'Response: \n' + res + '\n';
-        errMsg += 'Context: \n' + err;
-        errMsg += 'Trace: \n' + err.stack + '\n';
-
-        console.log(err.message);
-
-        log.info(err);
-    });
-
-    domainHandler.enter();
-    next();
-});
-
-
-/**
- * ROUTES
- */
-var route = require('./app/routes');
-route(coreServer);
-
-
-/**
- * SERVER START
- */
-var port = process.env.PORT || config.server.port;
-
-coreServer.listen(port, function() {
-    console.log('HTTP magic happens on port ' + port);
-});
 
 var banner = `
-oocccdMMMMMMMMMWOkkkkoooolcclX
-llc:::0MMMMMMMM0xxxxxdlllc:::d
-lll:::cXMMMMMMXxxxxxxxdlllc:::
-lllc:::cXMMMMNkxxxdxxxxolllc::
-olllc:::oWMMNkxxxdloxxxxolllc:   ##     ##    ###    #### ##    ## ######## ##       ##     ## ##     ##
-xolllc:::xWWOxxxdllloxxxxolllc   ###   ###   ## ##    ##  ###   ## ##       ##       ##     ##  ##   ## 
-xxolllc:::x0xxxdllll:oxxxxllll   #### ####  ##   ##   ##  ####  ## ##       ##       ##     ##   ## ##  
-xxxolllc::oxxxxllll:::dxxxdlll   ## ### ## ##     ##  ##  ## ## ## ######   ##       ##     ##    ###   
-xxxdllll:lxxxxolllc:::Okxxxdll   ##     ## #########  ##  ##  #### ##       ##       ##     ##   ## ##  
-0xxxdllloxxxxolllc:::OMNkxxxdl   ##     ## ##     ##  ##  ##   ### ##       ##       ##     ##  ##   ## 
-W0xxxdllxxxxolllc:::xMMMXxxxxd   ##     ## ##     ## #### ##    ## ##       ########  #######  ##     ##
-MWOxxxdxxxxdlllc:::oWMMMMKxxxx
-MMWkxxxxxxdlllc:::oNMMMMMM0xxx
-MMMXxxxxxdllllc::cXMMMMMMMWOxx
-MMMM0xxxxolllc:::kMMMMMMMMMXxx
+                                     
+_|      _|            _|                _|_|  _|                      
+_|_|  _|_|    _|_|_|      _|_|_|      _|      _|  _|    _|  _|    _|  
+_|  _|  _|  _|    _|  _|  _|    _|  _|_|_|_|  _|  _|    _|    _|_|    
+_|      _|  _|    _|  _|  _|    _|    _|      _|  _|    _|  _|    _|  
+_|      _|    _|_|_|  _|  _|    _|    _|      _|    _|_|_|  _|    _|  
+                                                                      
+    
+                == Industrial IoT System ==
+       
+
+                Made with <3 by Mainflux Team
+
+[w] http://mainflux.io
+[t] @mainflux
+
 `
 
 console.log(banner);
 
-console.log(config.server.message);
-
-
-/**
- * Exports
- */
-module.exports = coreServer;
