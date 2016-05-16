@@ -6,7 +6,7 @@
  * See the included LICENSE file for more details.
  */
 
-var uuid = require('node-uuid');
+var deviceController = require('./app/controllers/devices');
 var nats = require('nats').connect();
 
 var replySubject = '';
@@ -16,8 +16,11 @@ var replySubject = '';
  */
 var createDevice = function(params) {
     console.log("createDevice");
- 
-    nats.publish(replySubject, 'Response from createDevice()');
+    
+    var res = {};
+    deviceController.createDevice(req, res, function() {
+        nats.publish(replySubject, 'Response from createDevice(): ', res);
+    });
 }
 
 /**
@@ -26,7 +29,10 @@ var createDevice = function(params) {
 var getDevices = function(params) {
     console.log("getDevices");
  
-    nats.publish(replySubject, 'Response from getDevices()');
+    var res = {};
+    deviceController.getDevices(req, res, function() {
+        nats.publish(replySubject, 'Response from getDevices(): ', res);
+    });
 }
 
 /**
@@ -34,8 +40,11 @@ var getDevices = function(params) {
  */
 var getDevice = function(params) {
     console.log("getDevice");
- 
-    nats.publish(replySubject, 'Response from getDevice()');
+
+    var res = {};
+    deviceController.getDevice(req, res, function() {
+        nats.publish(replySubject, 'Response from getDevice(): ', res);
+    });
 }
 
 /**
@@ -43,8 +52,11 @@ var getDevice = function(params) {
  */
 var updateDevice = function(params) {
     console.log("updateDevice");
- 
-    nats.publish(replySubject, 'Response from updateDevice()');
+
+    var res = {};
+    deviceController.updateDevice(req, res, function() {
+        nats.publish(replySubject, 'Response from updateDevice(): ', res);
+    });
 }
 
 /**
@@ -52,8 +64,11 @@ var updateDevice = function(params) {
  */
 var deleteDevice = function(params) {
     console.log("deleteDevice");
- 
-    nats.publish(replySubject, 'Response from deleteDevice()');
+
+    var res = {};
+    deviceController.deleteDevice(req, res, function() {
+        nats.publish(replySubject, 'Response from deleteDevice()');
+    });
 }
 
 
