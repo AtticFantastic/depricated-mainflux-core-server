@@ -2,7 +2,7 @@ var mongojs = require('mongojs');
 var devicesDb = require('../database').collection('devices');
 
 var jwt = require('jsonwebtoken');
-var config = require('../../config/config');
+var config = require('../../config');
 var log = require('../logger');
 
 var os = require('os');

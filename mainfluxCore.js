@@ -6,6 +6,7 @@
  * See the included LICENSE file for more details.
  */
 
+var uuid = require('node-uuid');
 var nats = require('nats').connect();
 
 var replySubject = '';
