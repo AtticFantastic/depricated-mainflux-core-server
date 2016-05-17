@@ -7,86 +7,150 @@ var os = require('os');
 
 
 /** createDevice() */
-exports.createDevice = function(req, res, next) {
-
+exports.createDevice = function(req, cb) {
+    var res = {};
     var deviceId = uuid.v1();
-    req.body.deviceId = deviceId;
+
+    /** TODO: req must contain deviceId, deviceName and deviceType - form validation */
+    var entity = {
+        'deviceId' : deviceId,
+        'deviceName' : req.deviceName,
+        'deviceType' : req.deviceType
+    }
         
     /** Save the device and check for errors */
-    devicesDb.save(req.body, function(err, device) {
-        if (err)
-            return next(err);
+    devicesDb.save(entity, function(err, device) {
+        if (err) {
+            res = JSON.stringify({
+                'status' : 505,
+                'message' : 'Internal Server Error'
+            });
+            return cb(res, err);
+        }
 
-        res.json({
+        res = JSON.stringify({
                 'status': 200,
-                'message': 'Device created',
+                'message': 'OK',
                 'deviceId': deviceId
         });
-    });
 
-    return next();
+        return cb(err, res);
+    });
 }
 
-/** getAllDevices() */
-exports.getAllDevices = function(req, res, next) {
+/** getDevices() */
+exports.getDevices = function(req, cb) {
+    var res = {};
 
-	console.log("req.headers['x-auth-token'] = ", req.headers['x-auth-token']);
+    devicesDb.find(function(err, devices) {
+        if (err) {
+            res = JSON.stringify({
+                'status' : 505,
+                'message': 'Internal Server Error'
+            });
+            return cb(err, res);
+        }
 
-    log.info('hi');
-		
-    devicesDb.find(req.body, function(err, devices) {
-        if (err)
-            return next(err);
+        console.log("DEVICES: ", devices);
 
-        res.json(devices);
-        return next();
+        res = JSON.stringify(devices);
+        return cb(err, res);
     });
 }
 
 /** getDevice() */
-exports.getDevice = function(req, res, next) {
+exports.getDevice = function(req, cb) {
+    var res = {};
 
-    devicesDb.findOne({deviceId: req.deviceId}, function(err, device) {
-        if (err)
-            return next(err);
+    devicesDb.findOne({'deviceId': req.deviceId}, function(err, device) {
+        if (err) {
+            res = JSON.stringify({
+                'status' : 505,
+                'message': 'Internal Server Error'
+            });
+            return cb(err, res);
+        }
         
         if (device) {
-            res.json(device);
+            res = JSON.stringify(device);
         } else {
-            res.send("NOT FOUND");
+            res = res = JSON.stringify({
+                'status' : 404,
+                'message': 'Not found',
+                'deviceId': req.deviceId
+            });
         }
-        return next();
+        return cb(err, res);
     });
 }
 
 /** updateDevice() */
-exports.updateDevice = function(req, res, next) {
-    /** Use our device model to find the device we want */
-    console.log(req.body);
-    devicesDb.update({
-        deviceId: req.deviceId
-    },
-        {$set: req.body},
-        function(err, device) {
-            if (err)
-                return next(err);
+exports.updateDevice = function(req, cb) {
+    var res = {};
 
-            res.send('OK');
-            return next();
+    /** Use our device model to find the device we want */
+    console.log(req);
+
+    devicesDb.update(
+            {deviceId: req.deviceId},
+            {$set: req},
+            function(err, upd) {
+            if (err) {
+                res = JSON.stringify({
+                    'status' : 505,
+                    'message': 'Internal Server Error'
+                });
+                return cb(err, res);
+            }
+
+            if (upd.n === 1) {
+                res = JSON.stringify({
+                    'status': 200,
+                    'message': 'OK',
+                    'deviceId': req.deviceId
+                });
+            } else {
+                res = JSON.stringify({
+                    'status' : 404,
+                    'message': 'Not found',
+                    'deviceId': req.deviceId
+                });
+            }
+
+            return cb(err, res);
     });
 }
 
 /** deleteDevice() */
-exports.deleteDevice = function(req, res, next) {
+exports.deleteDevice = function(req, cb) {
+    var res = {};
 
     devicesDb.remove({
         deviceId: req.deviceId
-    }, function(err, device) {
-        if (err)
-            return next(err);
+    }, function(err, rem) {
+        if (err) {
+            res = JSON.stringify({
+                'status' : 505,
+                'message': 'Internal Server Error'
+            });
+            return cb(err, res);
+        }
 
-        res.send('OK');
-        return next();
+        if (rem.n === 1) {
+            res = JSON.stringify({
+                'status': 200,
+                'message': 'OK',
+                'deviceId': req.deviceId
+            });
+        } else {
+            res = JSON.stringify({
+                'status': 404,
+                'message': 'Not Found',
+                'deviceId': req.deviceId
+            });
+        }
+
+        return cb(err, res);
     });
 }
 

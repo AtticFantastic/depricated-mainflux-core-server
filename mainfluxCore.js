@@ -14,60 +14,68 @@ var replySubject = '';
 /**
  * createDevice()
  */
-var createDevice = function(params) {
+var createDevice = function(req) {
     console.log("createDevice");
     
-    var res = {};
-    deviceController.createDevice(req, res, function() {
-        nats.publish(replySubject, 'Response from createDevice(): ', res);
+    deviceController.createDevice(req, function(err, res) {
+
+        console.log("RESULT: ", res)
+        /** Send reply to the API server */
+        nats.publish(replySubject, res);
     });
 }
 
 /**
  * getDevices()
  */
-var getDevices = function(params) {
+var getDevices = function(req) {
     console.log("getDevices");
  
-    var res = {};
-    deviceController.getDevices(req, res, function() {
-        nats.publish(replySubject, 'Response from getDevices(): ', res);
+    deviceController.getDevices(req, function(err, res) {
+
+        console.log("RESULT: ", res)
+        console.log(typeof res);
+
+        nats.publish(replySubject, res);
     });
 }
 
 /**
  * getDevice()
  */
-var getDevice = function(params) {
+var getDevice = function(req) {
     console.log("getDevice");
 
-    var res = {};
-    deviceController.getDevice(req, res, function() {
-        nats.publish(replySubject, 'Response from getDevice(): ', res);
+    deviceController.getDevice(req, function(err, res) {
+        nats.publish(replySubject, res);
     });
 }
 
 /**
  * updateDevice()
  */
-var updateDevice = function(params) {
+var updateDevice = function(req) {
     console.log("updateDevice");
 
-    var res = {};
-    deviceController.updateDevice(req, res, function() {
-        nats.publish(replySubject, 'Response from updateDevice(): ', res);
+    deviceController.updateDevice(req, function(err, res) {
+
+        /** Reply to the caller */
+        nats.publish(replySubject, res);
+
+        /** Fan out the update to other services */
+        nats.publish('core_out', res);
+
     });
 }
 
 /**
  * deleteDevice()
  */
-var deleteDevice = function(params) {
+var deleteDevice = function(req) {
     console.log("deleteDevice");
 
-    var res = {};
-    deviceController.deleteDevice(req, res, function() {
-        nats.publish(replySubject, 'Response from deleteDevice()');
+    deviceController.deleteDevice(req, function(err, res) {
+        nats.publish(replySubject, res);
     });
 }
 
@@ -93,7 +101,7 @@ nats.subscribe('core_in', function(req, replyTo) {
     console.log(replySubject);
     
     /** Call the function */
-    fnList[rpc.method](rpc.params)
+    fnList[rpc.method](rpc.body)
 
 });
 
