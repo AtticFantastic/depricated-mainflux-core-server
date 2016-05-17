@@ -6,8 +6,9 @@
  * See the included LICENSE file for more details.
  */
 
+var config = require('./config');
 var deviceController = require('./app/controllers/devices');
-var nats = require('nats').connect();
+var nats = require('nats').connect('nats://' + config.nats.host + ':' + config.nats.port);
 
 var replySubject = '';
 

@@ -25,4 +25,12 @@ config.db = {
     name : 'test'
 }
 
+/**
+ * NATS
+ */
+config.nats = {
+    host : 'localhost',
+    port : 4222
+}
+
 module.exports = config;
