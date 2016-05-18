@@ -7,8 +7,6 @@ Mainflux Core Microservice for Mainflux IoT Platform.
 ### Documentation
 Development documentation can be found on our [Mainflux GitHub Wiki](https://github.com/Mainflux/mainflux/wiki).
 
-Swagger-generated API reference can be foud at [http://mainflux.com/apidoc](http://mainflux.com/apidoc).
-
 ### Community
 #### Mailing lists
 - [mainflux-dev](https://groups.google.com/forum/#!forum/mainflux-dev) - developers related. This is discussion about development of Mainflux IoT cloud itself.
