@@ -19,7 +19,7 @@ config.server = {
 /**
  * MongoDB
  */
-config.db = {
+config.mongo = {
     host : 'localhost',
     port : 27017,
     name : 'test'
@@ -31,6 +31,18 @@ config.db = {
 config.nats = {
     host : 'localhost',
     port : 4222
+}
+
+/**
+ * InfluxDB
+ */
+config.influx = {
+  host : 'localhost',
+  port : 8086, // optional, default 8086
+  protocol : 'http', // optional, default 'http'
+  username : 'mainflux',
+  password : '',
+  database : '_internal'
 }
 
 module.exports = config;

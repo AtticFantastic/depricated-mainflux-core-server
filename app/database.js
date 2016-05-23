@@ -1,26 +1,31 @@
+/**
+ * Copyright (c) Mainflux (https://mainflux.com)
+ *
+ * Mainflux server is licensed under an Apache license, version 2.0 license.
+ * All rights not explicitly granted in the Apache license, version 2.0 are reserved.
+ * See the included LICENSE file for more details.
+ */
+
 var config = require('../config');
+var mongojs = require('mongojs');
+var influx = require('influx');
 
 /**
  * MONGO DB
  */
-var mongojs = require('mongojs');
-
-/** Connect to DB */
-var collections = ['devices'];
-
-/** Check if we run with Docker compose */
-var dockerMongo = process.env.MONGODB_NAME;
+var collections = ['devices', 'streams'];
 var dbUrl = '';
-if (dockerMongo && dockerMongo == '/mainflux-api/mongodb') {
-    dbUrl = 'mongodb://' + process.env.MONGODB_PORT_27017_TCP_ADDR + ':' + process.env.MONGODB_PORT_27017_TCP_PORT + '/' + config.db.name;
-} else {
-    dbUrl = 'mongodb://' + config.db.host + ':' + config.db.port + '/' + config.db.name;
-}
+dbUrl = 'mongodb://' + config.mongo.host + ':' + config.mongo.port + '/' + config.mongo.name;
 
-var db = mongojs(dbUrl);
+var mongoConn = mongojs(dbUrl, collections);
 
 
 /**
- * EXPORTS
+ * InfluxDB
  */
-module.exports = db;
+var influxClient = influx(config.influx);
+
+module.exports = {
+    mongoDb: mongoConn,
+    influxDb: influxClient
+}
