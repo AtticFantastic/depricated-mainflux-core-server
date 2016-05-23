@@ -1,37 +1,74 @@
-var mongojs = require('mongojs');
-var devicesDb = require('../database').collection('devices');
+/**
+ * Copyright (c) Mainflux (https://mainflux.com)
+ *
+ * Mainflux server is licensed under an Apache license, version 2.0 license.
+ * All rights not explicitly granted in the Apache license, version 2.0 are reserved.
+ * See the included LICENSE file for more details.
+ */
+
+var mongoDb = require('../database').mongoDb;
 var uuid = require('node-uuid');
 var config = require('../../config');
 var log = require('../logger');
 var os = require('os');
+var valid = require('lx-valid');
+var deviceSchema = require('../models/deviceSchema.json');
 
+/**
+ * Device Class
+ */
+function Device() 
+{
+    this.Id = "";
+    this.Name = "";
+    this.Description = "";
+    this.Visibility = "";
+    this.Enabled = false;
+    this.Serial = "";
+    this.Tags = [],
+    this.Location = {
+        "name": "",
+        "latitude": 0,
+        "longitude": 0,
+        "elevation": 0
+    },
+    this.Created = "",
+    this.Updated = "",
+    this.Metadata = {}
+}
 
 /** createDevice() */
 exports.createDevice = function(req, cb) {
     var res = {};
-    var deviceId = uuid.v1();
 
-    /** TODO: req must contain deviceId, deviceName and deviceType - form validation */
-    var entity = {
-        'deviceId' : deviceId,
-        'deviceName' : req.deviceName,
-        'deviceType' : req.deviceType
+    res = valid.validate(req, deviceSchema);
+    if (res.valid === false) {
+        console.log(res)
+        res = JSON.stringify({
+            'status' : 400,
+            'message' : 'Bad Request'
+        });
+
+        return cb(res.valid, res);
     }
-        
+
+    req.Id = uuid.v1();
+    var device = Object.assign(new Device(), req);
+    
     /** Save the device and check for errors */
-    devicesDb.save(entity, function(err, device) {
+    mongoDb.devices.insert(device, function(err, ins) {
         if (err) {
             res = JSON.stringify({
-                'status' : 505,
+                'status' : 500,
                 'message' : 'Internal Server Error'
             });
-            return cb(res, err);
+            return cb(err, res);
         }
 
         res = JSON.stringify({
-                'status': 200,
-                'message': 'OK',
-                'deviceId': deviceId
+                'status': 201,
+                'message': 'Created',
+                'id': req.Id
         });
 
         return cb(err, res);
@@ -42,10 +79,10 @@ exports.createDevice = function(req, cb) {
 exports.getDevices = function(req, cb) {
     var res = {};
 
-    devicesDb.find(function(err, devices) {
+    mongoDb.devices.find(function(err, devices) {
         if (err) {
             res = JSON.stringify({
-                'status' : 505,
+                'status' : 500,
                 'message': 'Internal Server Error'
             });
             return cb(err, res);
@@ -62,7 +99,8 @@ exports.getDevices = function(req, cb) {
 exports.getDevice = function(req, cb) {
     var res = {};
 
-    devicesDb.findOne({'deviceId': req.deviceId}, function(err, device) {
+    /** HTTP API server has assured that req.id exists before sending us req */
+    mongoDb.devices.findOne({'Id': req.id}, function(err, device) {
         if (err) {
             res = JSON.stringify({
                 'status' : 505,
@@ -91,13 +129,13 @@ exports.updateDevice = function(req, cb) {
     /** Use our device model to find the device we want */
     console.log(req);
 
-    devicesDb.update(
-            {deviceId: req.deviceId},
+    mongoDb.devices.update(
+            {'Id': req.Id},
             {$set: req},
             function(err, upd) {
             if (err) {
                 res = JSON.stringify({
-                    'status' : 505,
+                    'status' : 500,
                     'message': 'Internal Server Error'
                 });
                 return cb(err, res);
@@ -125,12 +163,12 @@ exports.updateDevice = function(req, cb) {
 exports.deleteDevice = function(req, cb) {
     var res = {};
 
-    devicesDb.remove({
-        deviceId: req.deviceId
+    mongoDb.devices.remove({
+        'Id': req.Id
     }, function(err, rem) {
         if (err) {
             res = JSON.stringify({
-                'status' : 505,
+                'status' : 500,
                 'message': 'Internal Server Error'
             });
             return cb(err, res);
@@ -140,13 +178,13 @@ exports.deleteDevice = function(req, cb) {
             res = JSON.stringify({
                 'status': 200,
                 'message': 'OK',
-                'deviceId': req.deviceId
+                'deviceId': req.Id
             });
         } else {
             res = JSON.stringify({
                 'status': 404,
                 'message': 'Not Found',
-                'deviceId': req.deviceId
+                'deviceId': req.Id
             });
         }
 
