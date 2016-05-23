@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "Id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Visibility": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Serial": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Tags": {
+      "type": "array",
+      "items": {
+        "properties": {}
+      }
+    },
+    "Location": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "Latitude": {
+          "type": "number"
+        },
+        "Longitude": {
+          "type": "number"
+        },
+        "Elevation": {
+          "type": "number"
+        }
+      }
+    },
+    "Created": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Updated": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  "required": [
+    "Name"
+  ]
+}
