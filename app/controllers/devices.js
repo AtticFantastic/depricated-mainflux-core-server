@@ -11,7 +11,9 @@ var uuid = require('node-uuid');
 var config = require('../../config');
 var log = require('../logger');
 var os = require('os');
-var valid = require('lx-valid');
+
+var Ajv = require('ajv');
+var ajv = new Ajv({useDefaults: true});
 var deviceSchema = require('../models/deviceSchema.json');
 
 /**
@@ -41,22 +43,24 @@ function Device()
 exports.createDevice = function(req, cb) {
     var res = {};
 
-    res = valid.validate(req, deviceSchema);
-    if (res.valid === false) {
-        console.log(res)
+    var valid = ajv.validate(deviceSchema, req);
+    if (!valid) {
+        console.log(ajv.errors)
         res = JSON.stringify({
             'status' : 400,
             'message' : 'Bad Request'
         });
 
-        return cb(res.valid, res);
+        return cb(ajv.errors, res);
     }
 
-    req.Id = uuid.v1();
-    var device = Object.assign(new Device(), req);
+    req.id = uuid.v1();
+    //var device = Object.assign(new Device(), req);
+
+    console.log(req);
     
     /** Save the device and check for errors */
-    mongoDb.devices.insert(device, function(err, ins) {
+    mongoDb.devices.insert(req, function(err, ins) {
         if (err) {
             res = JSON.stringify({
                 'status' : 500,

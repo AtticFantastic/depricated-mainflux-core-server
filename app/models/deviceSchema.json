@@ -1,70 +1,107 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "",
   "type": "object",
+  "title": "Root schema.",
+  "description": "An explanation about the purpose of this instance.",
   "properties": {
-    "Id": {
+    "id": {
       "type": "string",
-      "minLength": 1
+      "title": "Id schema.",
+      "description": "An explanation about the purpose of this instance.",
+      "default": "88fce370-1c68-11e6-8610-27f9510f1a02"
     },
-    "Name": {
+    "name": {
       "type": "string",
-      "minLength": 1
+      "title": "Name schema.",
+      "description": "An explanation about the purpose of this instance.",
+      "default": "Some Device"
     },
-    "Description": {
+    "description": {
       "type": "string",
-      "minLength": 1
+      "title": "Description schema.",
+      "description": "An explanation about the purpose of this instance.",
+      "default": "Longer description for Some Device"
     },
-    "Visibility": {
+    "visibility": {
       "type": "string",
-      "minLength": 1
+      "title": "Visibility schema.",
+      "description": "An explanation about the purpose of this instance.",
+      "default": "private"
     },
-    "Status": {
+    "status": {
       "type": "string",
-      "minLength": 1
+      "title": "Status schema.",
+      "description": "An explanation about the purpose of this instance.",
+      "default": "disabled"
     },
-    "Serial": {
+    "serial": {
       "type": "string",
-      "minLength": 1
+      "title": "Serial schema.",
+      "description": "An explanation about the purpose of this instance.",
+      "default": "12345"
     },
-    "Tags": {
+    "tags": {
       "type": "array",
+      "title": "Tags schema.",
+      "description": "An explanation about the purpose of this instance.",
       "items": {
-        "properties": {}
+        "type": "string",
+        "title": "1 schema.",
+        "description": "An explanation about the purpose of this instance.",
+        "default": "ipsum"
       }
     },
-    "Location": {
+    "location": {
       "type": "object",
+      "title": "Location schema.",
+      "description": "An explanation about the purpose of this instance.",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string",
-          "minLength": 1
+          "title": "Name schema.",
+          "description": "An explanation about the purpose of this instance.",
+          "default": "Storage Room"
         },
-        "Latitude": {
-          "type": "number"
+        "latitude": {
+          "type": "number",
+          "title": "Latitude schema.",
+          "description": "An explanation about the purpose of this instance.",
+          "default": -37.9788423562422
         },
-        "Longitude": {
-          "type": "number"
+        "longitude": {
+          "type": "number",
+          "title": "Longitude schema.",
+          "description": "An explanation about the purpose of this instance.",
+          "default": -57.5478776916862
         },
-        "Elevation": {
-          "type": "number"
+        "elevation": {
+          "type": "integer",
+          "title": "Elevation schema.",
+          "description": "An explanation about the purpose of this instance.",
+          "default": 5
         }
       }
     },
-    "Created": {
+    "created": {
       "type": "string",
-      "minLength": 1
+      "title": "Created schema.",
+      "description": "An explanation about the purpose of this instance.",
+      "default": "2014-09-01T10:00:00.764Z"
     },
-    "Updated": {
+    "updated": {
       "type": "string",
-      "minLength": 1
+      "title": "Updated schema.",
+      "description": "An explanation about the purpose of this instance.",
+      "default": "2014-09-02T10:00:00.245Z"
     },
-    "Metadata": {
+    "metadata": {
       "type": "object",
+      "title": "Metadata schema.",
+      "description": "An explanation about the purpose of this instance.",
       "properties": {}
     }
   },
   "required": [
-    "Name"
+    "name"
   ]
 }
