@@ -8,19 +8,19 @@
       "type": "string",
       "title": "Id schema.",
       "description": "An explanation about the purpose of this instance.",
-      "default": "88fce370-1c68-11e6-8610-27f9510f1a02"
+      "default": ""
     },
     "name": {
       "type": "string",
       "title": "Name schema.",
       "description": "An explanation about the purpose of this instance.",
-      "default": "Some Device"
+      "default": "Unnamed Device"
     },
     "description": {
       "type": "string",
       "title": "Description schema.",
       "description": "An explanation about the purpose of this instance.",
-      "default": "Longer description for Some Device"
+      "default": "Description for Unnamed Device"
     },
     "visibility": {
       "type": "string",
@@ -34,21 +34,15 @@
       "description": "An explanation about the purpose of this instance.",
       "default": "disabled"
     },
-    "serial": {
-      "type": "string",
-      "title": "Serial schema.",
-      "description": "An explanation about the purpose of this instance.",
-      "default": "12345"
-    },
     "tags": {
       "type": "array",
       "title": "Tags schema.",
       "description": "An explanation about the purpose of this instance.",
       "items": {
         "type": "string",
-        "title": "1 schema.",
+        "title": "Items schema.",
         "description": "An explanation about the purpose of this instance.",
-        "default": "ipsum"
+        "default": ""
       }
     },
     "location": {
@@ -60,39 +54,40 @@
           "type": "string",
           "title": "Name schema.",
           "description": "An explanation about the purpose of this instance.",
-          "default": "Storage Room"
+          "default": ""
         },
         "latitude": {
           "type": "number",
           "title": "Latitude schema.",
           "description": "An explanation about the purpose of this instance.",
-          "default": -37.9788423562422
+          "default": 0
         },
         "longitude": {
           "type": "number",
           "title": "Longitude schema.",
           "description": "An explanation about the purpose of this instance.",
-          "default": -57.5478776916862
+          "default": 0
         },
         "elevation": {
-          "type": "integer",
+          "type": "number",
           "title": "Elevation schema.",
           "description": "An explanation about the purpose of this instance.",
-          "default": 5
+          "default": 0
         }
-      }
+      },
+      "default": {"name": "", "latitude": 0, "longitude": 0, "elevation": 0}
     },
     "created": {
       "type": "string",
       "title": "Created schema.",
       "description": "An explanation about the purpose of this instance.",
-      "default": "2014-09-01T10:00:00.764Z"
+      "default": ""
     },
     "updated": {
       "type": "string",
       "title": "Updated schema.",
       "description": "An explanation about the purpose of this instance.",
-      "default": "2014-09-02T10:00:00.245Z"
+      "default": ""
     },
     "metadata": {
       "type": "object",
@@ -101,6 +96,7 @@
       "properties": {}
     }
   },
+  "additionalProperties": false,
   "required": [
     "name"
   ]
