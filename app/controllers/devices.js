@@ -16,6 +16,8 @@ var Ajv = require('ajv');
 var ajv = new Ajv({useDefaults: true});
 var deviceSchema = require('../models/deviceSchema.json');
 
+var moment = require('moment');
+
 /**
  * Device Class
  */
@@ -58,6 +60,9 @@ exports.createDevice = function(req, cb) {
     //var device = Object.assign(new Device(), req);
 
     console.log(req);
+
+    /** Timestamp */
+    req.created = req.updated = moment().toISOString();
     
     /** Save the device and check for errors */
     mongoDb.devices.insert(req, function(err, ins) {
@@ -132,6 +137,9 @@ exports.updateDevice = function(req, cb) {
 
     /** Use our device model to find the device we want */
     console.log(req);
+
+    /** Timestamp */
+    req.updated = moment().toISOString();
 
     mongoDb.devices.update(
             {'Id': req.Id},
