@@ -12,12 +12,17 @@ var config = require('../../config');
 var log = require('../logger');
 var os = require('os');
 
+/** JSON Validation */
 var Ajv = require('ajv');
 var ajv = new Ajv();
 var ajvDef = new Ajv({useDefaults: true}); /** prefill with defaults */
 var deviceSchema = require('../models/deviceSchema.json');
 
+/** Timestamp */
 var moment = require('moment');
+
+/** Logs */
+log.info("hi");
 
 /** createDevice() */
 exports.createDevice = function(req, cb) {
@@ -25,7 +30,7 @@ exports.createDevice = function(req, cb) {
 
     var valid = ajvDef.validate(deviceSchema, req);
     if (!valid) {
-        console.log(ajvDef.errors)
+        log.error(ajvDef.errors)
         res = JSON.stringify({
             'status' : 400,
             'message' : 'Bad Request'
@@ -72,7 +77,7 @@ exports.getDevices = function(req, cb) {
             return cb(err, res);
         }
 
-        console.log("DEVICES: ", devices);
+        log.info("DEVICES: ", devices);
 
         res = JSON.stringify(devices);
         return cb(err, res);
@@ -112,7 +117,7 @@ exports.updateDevice = function(req, cb) {
 
     var valid = ajv.validate(deviceSchema, req);
     if (!valid) {
-        console.log(ajv.errors)
+        log.error(ajv.errors)
         res = JSON.stringify({
             'status' : 400,
             'message' : 'Bad Request'

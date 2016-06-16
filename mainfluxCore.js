@@ -8,6 +8,7 @@
 
 var config = require('./config');
 var deviceController = require('./app/controllers/devices');
+var log = require('./app/logger');
 var nats = require('nats').connect('nats://' + config.nats.host + ':' + config.nats.port);
 
 var replySubject = '';
@@ -20,7 +21,7 @@ var createDevice = function(req) {
     
     deviceController.createDevice(req, function(err, res) {
 
-        console.log("RESULT: ", res)
+        log.info("RESULT: ", res)
         /** Send reply to the API server */
         nats.publish(replySubject, res);
     });
@@ -34,9 +35,7 @@ var getDevices = function(req) {
  
     deviceController.getDevices(req, function(err, res) {
 
-        console.log("RESULT: ", res)
-        console.log(typeof res);
-
+        log.info("RESULT: ", res)
         nats.publish(replySubject, res);
     });
 }
