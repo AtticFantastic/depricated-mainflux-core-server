@@ -12,58 +12,63 @@ var config = require('../../config');
 var log = require('../logger');
 var os = require('os');
 
-/**
- * Stream Model
- *
- * {
- *      "name": "temperature",
- *      "display_name": "Temperature",
- *      "type": "numeric",
- *      "value": 32,
- *      "latest_value_at":"2014-09-10T19:15:01.325Z",
- *      "unit": { "label": "celsius", "symbol": "C" },
- *      "url": "https://api-m2x.att.com/v2/devices/a4f919d931c265ddd7b76649eac22f7e/streams/temperature",
- *      "created": "2014-09-09T19:15:00.344Z",
- *      "updated": "2014-09-10T19:15:00.390Z"
- * }
- */
+/** JSON Validation */
+var Ajv = require('ajv');
+var ajv = new Ajv();
+var ajvDef = new Ajv({useDefaults: true}); /** prefill with defaults */
+var channelSchema = require('../models/channelSchema.json');
 
-/** createDevice() */
-exports.createDevice = function(req, cb) {
+/** Timestamp */
+var moment = require('moment');
+
+/** Logs */
+log.info("hi");
+
+/** createChannel() */
+exports.createChannel = function(req, cb) {
     var res = {};
-    var id = uuid.v1();
 
-    /** TODO: req must contain streamId, streamName and streamType - form validation */
-    var entity = {
-        'name' : req.name,
-        'type' : req.type
+    var valid = ajvDef.validate(channelSchema, req);
+    if (!valid) {
+        log.error(ajvDef.errors)
+        res = JSON.stringify({
+            'status' : 400,
+            'message' : 'Bad Request'
+        });
+
+        return cb(ajvDef.errors, res);
     }
-        
-    /** Save the stream and check for errors */
-    mongoDb.streams.insert(entity, function(err, stream) {
+
+    req.id = uuid.v1();
+
+    /** Timestamp */
+    req.created = req.updated = moment().toISOString();
+    
+    /** Save the channel and check for errors */
+    mongoDb.channels.insert(req, function(err, ins) {
         if (err) {
             res = JSON.stringify({
                 'status' : 500,
                 'message' : 'Internal Server Error'
             });
-            return cb(res, err);
+            return cb(err, res);
         }
 
         res = JSON.stringify({
-                'status': 200,
-                'message': 'OK',
-                'id': id
+                'status': 201,
+                'message': 'Created',
+                'id': req.id
         });
 
         return cb(err, res);
     });
 }
 
-/** getDevices() */
-exports.getDevices = function(req, cb) {
+/** getChannels() */
+exports.getChannels = function(req, cb) {
     var res = {};
 
-    mongoDb.streams.find(function(err, streams) {
+    mongoDb.channels.find(function(err, channels) {
         if (err) {
             res = JSON.stringify({
                 'status' : 500,
@@ -72,48 +77,60 @@ exports.getDevices = function(req, cb) {
             return cb(err, res);
         }
 
-        console.log("DEVICES: ", streams);
+        log.info("DEVICES: ", channels);
 
-        res = JSON.stringify(streams);
+        res = JSON.stringify(channels);
         return cb(err, res);
     });
 }
 
-/** getDevice() */
-exports.getDevice = function(req, cb) {
+/** getChannel() */
+exports.getChannel = function(req, cb) {
     var res = {};
 
-    mongoDb.streams.findOne({'streamId': req.streamId}, function(err, stream) {
+    /** HTTP API server has assured that req.id exists before sending us req */
+    mongoDb.channels.findOne({'id': req.id}, function(err, channel) {
         if (err) {
             res = JSON.stringify({
-                'status' : 500,
+                'status' : 505,
                 'message': 'Internal Server Error'
             });
             return cb(err, res);
         }
         
-        if (stream) {
-            res = JSON.stringify(stream);
+        if (channel) {
+            res = JSON.stringify(channel);
         } else {
             res = res = JSON.stringify({
                 'status' : 404,
                 'message': 'Not found',
-                'streamId': req.streamId
+                'id': req.id
             });
         }
         return cb(err, res);
     });
 }
 
-/** updateDevice() */
-exports.updateDevice = function(req, cb) {
+/** updateChannel() */
+exports.updateChannel = function(req, cb) {
     var res = {};
 
-    /** Use our stream model to find the stream we want */
-    console.log(req);
+    var valid = ajv.validate(channelSchema, req);
+    if (!valid) {
+        log.error(ajv.errors)
+        res = JSON.stringify({
+            'status' : 400,
+            'message' : 'Bad Request'
+        });
 
-    mongoDb.streams.update(
-            {streamId: req.streamId},
+        return cb(ajv.errors, res);
+    }
+
+    /** Timestamp */
+    req.updated = moment().toISOString();
+
+    mongoDb.channels.update(
+            {'id': req.id},
             {$set: req},
             function(err, upd) {
             if (err) {
@@ -128,13 +145,13 @@ exports.updateDevice = function(req, cb) {
                 res = JSON.stringify({
                     'status': 200,
                     'message': 'OK',
-                    'streamId': req.streamId
+                    'id': req.id
                 });
             } else {
                 res = JSON.stringify({
                     'status' : 404,
                     'message': 'Not found',
-                    'streamId': req.streamId
+                    'id': req.id
                 });
             }
 
@@ -142,12 +159,12 @@ exports.updateDevice = function(req, cb) {
     });
 }
 
-/** deleteDevice() */
-exports.deleteDevice = function(req, cb) {
+/** deleteChannel() */
+exports.deleteChannel = function(req, cb) {
     var res = {};
 
-    mongoDb.streams.remove({
-        streamId: req.streamId
+    mongoDb.channels.remove({
+        'id': req.Id
     }, function(err, rem) {
         if (err) {
             res = JSON.stringify({
@@ -161,13 +178,13 @@ exports.deleteDevice = function(req, cb) {
             res = JSON.stringify({
                 'status': 200,
                 'message': 'OK',
-                'streamId': req.streamId
+                'id': req.id
             });
         } else {
             res = JSON.stringify({
                 'status': 404,
                 'message': 'Not Found',
-                'streamId': req.streamId
+                'id': req.id
             });
         }
 

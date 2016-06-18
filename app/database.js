@@ -13,7 +13,7 @@ var influx = require('influx');
 /**
  * MONGO DB
  */
-var collections = ['devices', 'streams'];
+var collections = ['devices', 'channels'];
 var dbUrl = '';
 dbUrl = 'mongodb://' + config.mongo.host + ':' + config.mongo.port + '/' + config.mongo.name;
 

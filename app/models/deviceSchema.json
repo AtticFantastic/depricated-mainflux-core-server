@@ -1,77 +1,51 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "title": "Root schema.",
-  "description": "An explanation about the purpose of this instance.",
   "properties": {
     "id": {
       "type": "string",
-      "title": "Id schema.",
-      "description": "An explanation about the purpose of this instance.",
       "default": ""
     },
     "name": {
       "type": "string",
-      "title": "Name schema.",
-      "description": "An explanation about the purpose of this instance.",
       "default": "Unnamed Device"
     },
     "description": {
       "type": "string",
-      "title": "Description schema.",
-      "description": "An explanation about the purpose of this instance.",
-      "default": "Description for Unnamed Device"
+      "default": ""
     },
     "visibility": {
       "type": "string",
-      "title": "Visibility schema.",
-      "description": "An explanation about the purpose of this instance.",
       "default": "private"
     },
     "status": {
       "type": "string",
-      "title": "Status schema.",
-      "description": "An explanation about the purpose of this instance.",
       "default": "disabled"
     },
     "tags": {
       "type": "array",
-      "title": "Tags schema.",
-      "description": "An explanation about the purpose of this instance.",
       "items": {
         "type": "string",
-        "title": "Items schema.",
-        "description": "An explanation about the purpose of this instance.",
         "default": ""
       }
     },
     "location": {
       "type": "object",
-      "title": "Location schema.",
-      "description": "An explanation about the purpose of this instance.",
       "properties": {
         "name": {
           "type": "string",
-          "title": "Name schema.",
-          "description": "An explanation about the purpose of this instance.",
           "default": ""
         },
         "latitude": {
           "type": "number",
-          "title": "Latitude schema.",
-          "description": "An explanation about the purpose of this instance.",
           "default": 0
         },
         "longitude": {
           "type": "number",
-          "title": "Longitude schema.",
-          "description": "An explanation about the purpose of this instance.",
           "default": 0
         },
         "elevation": {
-          "type": "number",
-          "title": "Elevation schema.",
-          "description": "An explanation about the purpose of this instance.",
+          "type": "integer",
           "default": 0
         }
       },
@@ -79,20 +53,14 @@
     },
     "created": {
       "type": "string",
-      "title": "Created schema.",
-      "description": "An explanation about the purpose of this instance.",
       "default": ""
     },
     "updated": {
       "type": "string",
-      "title": "Updated schema.",
-      "description": "An explanation about the purpose of this instance.",
       "default": ""
     },
     "metadata": {
       "type": "object",
-      "title": "Metadata schema.",
-      "description": "An explanation about the purpose of this instance.",
       "properties": {}
     }
   },
